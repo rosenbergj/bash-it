@@ -192,13 +192,15 @@ function git_prompt_vars {
   if ! _git-hide-status; then
     IFS=$'\t' read -r untracked_count unstaged_count staged_count <<< "$(_git-status-counts)"
     if [[ "${untracked_count}" -gt 0 || "${unstaged_count}" -gt 0 || "${staged_count}" -gt 0 ]]; then
-      SCM_DIRTY=1
+      SCM_DIRTY=0
       if [[ "${SCM_GIT_SHOW_DETAILS}" = "true" ]]; then
         [[ "${staged_count}" -gt 0 ]] && SCM_BRANCH+=" ${SCM_GIT_STAGED_CHAR}${staged_count}" && SCM_DIRTY=3
         [[ "${unstaged_count}" -gt 0 ]] && SCM_BRANCH+=" ${SCM_GIT_UNSTAGED_CHAR}${unstaged_count}" && SCM_DIRTY=2
-        [[ "${untracked_count}" -gt 0 ]] && SCM_BRANCH+=" ${SCM_GIT_UNTRACKED_CHAR}${untracked_count}" && SCM_DIRTY=1
+        [[ "${untracked_count}" -gt 0 ]] && SCM_BRANCH+=" ${SCM_GIT_UNTRACKED_CHAR}${untracked_count}"
       fi
-      SCM_STATE=${GIT_THEME_PROMPT_DIRTY:-$SCM_THEME_PROMPT_DIRTY}
+      if [[ "${unstaged_count}" -gt 0 || "${staged_count}" -gt 0 ]]; then
+        SCM_STATE=${GIT_THEME_PROMPT_DIRTY:-$SCM_THEME_PROMPT_DIRTY}
+      fi
     fi
   fi
 
